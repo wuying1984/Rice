@@ -3,11 +3,17 @@
 ## 1. De Novo Repeat Identification
 ### 构建数据库
 ```
-/pub/software/RepeatModeler-2.0.1/BuildDatabase -name sesame test_data/genome.fasta
+#!/bin/bash
+#PBS -l ncpus=16
+#PBS -l mem=32G
+cd /home/ywu/Xiaolab/Botrytis/Maker/RepeatModeler2
+BuildDatabase -name Bfra ../Bfra_R1V1.fa
 ```
 
 ### 运行 RepeatModeler
-`/pub/software/RepeatModeler-2.0.1/RepeatModeler -database sesame -pa 20 -LTRStruct`
+```
+RepeatModeler -database Bfra -pa 16 -LTRStruct 1>repeatmodeler2.o 2>repeatmodeler2.e
+```
 
 ### 运行 RepeatMasker
 `/pub/software/RepeatMasker/RepeatMasker -pa 20 -qq -lib sesame-families.fa test_data/genome.fasta >repeatmasker.log 2>&1`
