@@ -1,8 +1,21 @@
 # Maker2_Botrytis_Fragariae_genome_annotion
 
 ## 1. De Novo Repeat Identification
-BuildDatabase -name Boa_constrictor -engine ncbi Boa_constrictor_SGA_7C_scaffolds.fa
-RepeatModeler -pa 8 -engine ncbi -database Boa_constrictor 2>&1 | tee repeatmodeler.log
+### 构建数据库
+```
+/pub/software/RepeatModeler-2.0.1/BuildDatabase -name sesame test_data/genome.fasta
+```
+
+### 运行 RepeatModeler
+`/pub/software/RepeatModeler-2.0.1/RepeatModeler -database sesame -pa 20 -LTRStruct`
+
+### 运行 RepeatMasker
+`/pub/software/RepeatMasker/RepeatMasker -pa 20 -qq -lib sesame-families.fa test_data/genome.fasta >repeatmasker.log 2>&1`
+
+# 生成RepeatLandscape
+/pub/software/RepeatMasker/util/calcDivergenceFromAlign.pl -s sesame.divsum test_data/genome.fasta.cat
+
+perl /pub/software/RepeatMasker/util/createRepeatLandscape.pl -div sesame.divsum -g 18577337 > sesame.html
 
 ## 2. Full Repeat Annotation
 First, we need to find the library name of Botrytis.
