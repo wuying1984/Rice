@@ -31,13 +31,21 @@ perl /pub/software/RepeatMasker/util/createRepeatLandscape.pl -div sesame.divsum
 rmOutToGFF3.pl Full_mask/Boa_constrictor_SGA_7C.scaffolds.full_mask.out > Full_mask/Boa_constrictor_SGA_7C.scaffolds.full_mask.out.gff3
 
 
-## 2. map RNAseq data to genome by hisat2
+## 2. map RNAseq data to genome by hisat2 and trinity
 ```
 ~/Xiaolab/Botrytis/Maker/hisat$
 hisat2-build Bfra_R1V1.fa Bfra_R1V1.fa 1>hisat2-build.log 2>&1
 hisat2 --new-summary -p 6 -x Bfra_R1V1.fa -1 Bfra_1.fq  -2 Bfra_2.fq  2>hisat.log | samtools view -Sb - | samtools sort -o Bfra.bam -
 ```
-
+```
+upload *fastq.gz to web site https://galaxy.ncgas-trinity.indiana.edu/ (can not add --jaccard_clip)
+OR (I Prefere to use the following)
+#!/bin/bash
+#PBS -l ncpus=16
+#PBS -l mem=32G
+cd ~/Xiaolab/Botrytis/Maker/RNAseq
+Trinity --seqType fq --left Bfra_1.fq --right Bfra_2.fq --jaccard_clip --max_memory 32G --CPU 24 --output trinity_out
+```
 
 ## BRAKER training 
 ```
