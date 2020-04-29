@@ -128,4 +128,10 @@ run_BUSCO.py -i Bfra_R1V1.fa.all.maker.proteins.fasta  -l ~/program/BUSCO/ascomy
 ```
 
 ### 3)Third round
+```
+########GeneMark Training
+########using protein######
+perl /home/ywu/program_genome/gmes_linux_64/gmes_petap.pl  --seq ../Bfra_R1V1.fa.masked --EP --dbep ../../Evidence_files/Botrytis_protein/Bcin_B05.faa --fungus --verbose --cores=8 --soft_mask 2000 --min_contig 500 --max_intron 2000 1>gmes.e
 
+########using only genome########
+perl /home/ywu/program_genome/gmes_linux_64/gmes_petap.pl  --seq ../Bfra_R1V1.fa.masked --ES --fungus --verbose --cores=8 --soft_mask 2000 --min_contig 500 --max_intron 2000 1>gmes.e
