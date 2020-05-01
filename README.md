@@ -135,3 +135,10 @@ perl /home/ywu/program_genome/gmes_linux_64/gmes_petap.pl  --seq ../Bfra_R1V1.fa
 
 ########using only genome########
 perl /home/ywu/program_genome/gmes_linux_64/gmes_petap.pl  --seq ../Bfra_R1V1.fa.masked --ES --fungus --verbose --cores=8 --soft_mask 2000 --min_contig 500 --max_intron 2000 1>gmes.e
+```
+
+```
+gff3_merge -d Bfra_R1V1.fa_master_datastore_index.log
+fasta_merge -d Bfra_R1V1.fa_master_datastore_index.log
+run_BUSCO.py -i Bfra_R1V1.fa.all.maker.proteins.fasta  -l ~/program/BUSCO/ascomycota_odb9 -m prot -c 4 -o protein.busco.3rd >protein.busco.3rd.out
+```
