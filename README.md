@@ -142,3 +142,11 @@ gff3_merge -d Bfra_R1V1.fa_master_datastore_index.log
 fasta_merge -d Bfra_R1V1.fa_master_datastore_index.log
 run_BUSCO.py -i Bfra_R1V1.fa.all.maker.proteins.fasta  -l ~/program/BUSCO/ascomycota_odb9 -m prot -c 4 -o protein.busco.3rd >protein.busco.3rd.out
 ```
+
+git status
+
+git add *
+git commit -m m 
+git push
+
+git pull
