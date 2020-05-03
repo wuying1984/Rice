@@ -13,89 +13,73 @@
 ###### BEDtools version 2.24.0
 
 ### Raw data/resources:
-#### *1: Genome scaffolds*: Bfra_R1V1.fa (reformat of consensus_MECAT_R1_90x.fasta From Dr. Menjun Hu)
-#### *2: Botrytis cinerea EST sequence from NCBI (from Chris): EST_botryotinia_1.fasta
-#### *3: Protein data: uniprot + all available rice protein (uniprot_sprot.fasta 04182020; http://ibi.zju.edu.cn/ricerelativesgd/download.php)
-#### *4: Mycelia transcriptome: RNAseq data  
+#### *1: Genome scaffolds*: From Dr. Zhou
+#### *2: rice EST sequence from rice paper (japonica_3transcripts.fasta, rufipongon_3transcripts.fasta, nivara_3transcripts.fast); EST from PlantGDB rice_EST_from_PlantGDB.fasta;     used file /scratch/Xiao_Group/Rice/Evidence/trinity/3species_plantGDB.fasta 
+#### *3: Protein data: uniprot + all available rice protein (uniprot_sprot.fasta 04182020; http://ibi.zju.edu.cn/ricerelativesgd/download.php) used file /scratch/Xiao_Group/Rice/Evidence/Protein/uni_addOryza.fasta_20200503
 
 ## 1. De Novo Repeat Identification
-### 构建数据库
+### 构建数据库及运行RepeatMasker
 ```
 #!/bin/bash
 #SBATCH -n 16
 #SBATCH --mem=32G
-cd /home/ywu/Xiaolab/Botrytis/Maker/RepeatModeler2
-###Build database##################################
-BuildDatabase -name Bfra ../Bfra_R1V1.fa
-### run RepeatModeler###############################################################
-RepeatModeler -database Bfra -pa 16 -LTRStruct 1>repeatmodeler2.o 2>repeatmodeler2.e
-```
-### 运行 RepeatMasker
-```
-RepeatMasker -pa 16 -s -lib /home/ywu/Xiaolab/Botrytis/Maker/RepeatModeler2/Bfra-families.fa Bfra_R1V1.fa >repeatmasker.log 2>&1
-#####soft mask + no masking of low complexity
-RepeatMasker  -pa 8 -s -lib /home/ywu/Xiaolab/Botrytis/Maker/RepeatModeler2/Bfra-families.fa -nolow -xsmall Bfra_R1V1.fa >repeatmasker.log 2>&1
-#####soft mask all reapeat
-RepeatMasker  -pa 8 -s -lib /home/ywu/Xiaolab/Botrytis/Maker/RepeatModeler2/Bfra-families.fa -xsmall Bfra_R1V1.fa >repeatmasker.log 2>&1
-```
-
-# 生成RepeatLandscape
-/pub/software/RepeatMasker/util/calcDivergenceFromAlign.pl -s sesame.divsum test_data/genome.fasta.cat
-perl /pub/software/RepeatMasker/util/createRepeatLandscape.pl -div sesame.divsum -g 18577337 > sesame.html
-
-## 2. map RNAseq data (from pure mycelia sample) to genome by hisat2 and assembly EST by trinity
-### hisat2
-```
-~/Xiaolab/Botrytis/Maker/hisat$
-hisat2-build Bfra_R1V1.fa Bfra_R1V1.fa 1>hisat2-build.log 2>&1
-hisat2 --new-summary -p 6 -x Bfra_R1V1.fa -1 Bfra_1.fq  -2 Bfra_2.fq  2>hisat.log | samtools view -Sb - | samtools sort -o Bfra.bam -
-```
-### Trinity
-upload *fastq.gz to web site https://galaxy.ncgas-trinity.indiana.edu/ (can not add --jaccard_clip)
-OR (I Prefere to use the following)
-```
-#!/bin/bash
-#SBATCH -n 32
-#SBATCH --mem=64G
-cd ~/Xiaolab/Botrytis/Maker/RNAseq
-Trinity --seqType fq --left Bfra_1.fq --right Bfra_2.fq --jaccard_clip --max_memory 32G --CPU 24 --output trinity_out
-```
-### BRAKER training AUGUSTUS Gene prediction model
-```
-#############use braker.pl in old version BRAKER######################################
-perl /home/ywu/program_genome/BRAKER-2.1.2.old/scripts/braker.pl --species=BfraF --genome=../Bfra_R1V1.fa --bam=../hisat/Bfra.bam --prot_seq=/home/ywu/Xiaolab/Botrytis/Maker/Evidence_files/Botrytis_protein/Bcin_B05.faa --cores=8 --fungus --AUGUSTUS_CONFIG_PATH=/home/ywu/program/maker/exe/augustus/config/ --BAMTOOLS_PATH=/home/ywu/program_genome/software/bamtools/bin/ --SAMTOOLS_PATH=/home/ywu/program_genome/samtools --GENEMARK_PATH=/home/ywu/program_genome/gm_et_linux_64/gmes_petap --PYTHON3_PATH=/home/ywu/miniconda3/bin
-
-braker.pl --species=Bfra --genome=../Bfra_R1V1.fa --bam=../hisat/Bfra.bam --prot_seq=../Bcin_B05.fasta  --cores=8 --AUGUSTUS_CONFIG_PATH=/home/ywu/program/maker/exe/augustus/config/ --BAMTOOLS_PATH=/home/ywu/program_genome/software/bamtools/bin/ --SAMTOOLS_PATH=/home/ywu/program_genome/samtools --GENEMARK_PATH=/home/ywu/program/maker/exe/gmes_petap
-
-##############at gs8.genek.tv
-##############use BRAKER-2.1.2
-cd ~/workspace/Botrytis/BRAKER
-braker.pl --species=BFRAR --genome=../Bfra_R1V1.fa.masked --softmasking   --bam=../Hisat/Bfra.bam --cores=8 --AUGUSTUS_CONFIG_PATH=/home/u2020/software/augustus-3.3.3/config/ --BAMTOOLS_PATH=/pub/software/bamtools/bin/ --SAMTOOLS_PATH=/pub/software/samtools --GENEMARK_PATH=/pub/software/gm_et_linux_64/gmes_petap
-
-braker.pl --species=BFRAR --genome=../Bfra_R1V1.fa.masked --softmasking   --bam=../Hisat/Bfra.bam --fungus  --cores=8 --AUGUSTUS_CONFIG_PATH=/home/u2020/software/augustus-3.3.3/config/ --BAMTOOLS_PATH=/pub/software/bamtools/bin/ --SAMTOOLS_PATH=/pub/software/samtools --GENEMARK_PATH=/pub/software/gm_et_linux_64/gmes_petap
-
-with protein
-cd ~/workspace/Botrytis/BRAKER_protein
-braker.pl --species=BFRAR --genome=../Bfra_R1V1.fa.masked --softmasking   --bam=../Hisat/Bfra.bam --prot_seq=../Bcin_B05.fasta --cores=8 --AUGUSTUS_CONFIG_PATH=/home/u2020/software/augustus-3.3.3/config/ --BAMTOOLS_PATH=/pub/software/bamtools/bin/ --SAMTOOLS_PATH=/pub/software/samtools --GENEMARK_PATH=/pub/software/gm_et_linux_64/gmes_petap
+cd /scratch/Xiao_Group/Rice/RepeatModeler
+echo ZJ1
+echo ZJ1_Genome_HERA.fasta
+mkdir ZJ1
+cd ZJ1
+cp $i ${i/_Genome_HERA.fasta/}
+BuildDatabase -name ZJ1 ../ZJ1_Genome_HERA.fasta
+RepeatModeler -database ZJ1 -pa 16 -LTRStruct
+#####RepeatMasker from now#############
+cd /scratch/Xiao_Group/Rice/
+mkdir ZJ1_RepeatMasker
+cd ZJ1_RepeatMasker
+mv /scratch/Xiao_Group/Rice/RepeatModeler/ZJ1_Genome_HERA.fasta ./
+RepeatMasker -pa 16 -s -lib /scratch/Xiao_Group/Rice/RepeatModeler/ZJ1/ZJ1-families.fa -xsmall ZJ1_Genome_HERA.fasta >ZJ1_repeatmasker.log 2>&1
 ```
 
-ll /pub/software/augustus-3.3.2/config/species/botrytis_cinerea/botrytis_cinerea
-
-
-## 3. do maker
+## 2. do maker
 split genome
 ```
 cat  ZJ5_Genome_HERA.masked.fa | g ">" | sed 's#>##' >list.txt
 for i in `cat list.txt`; do cat ZJ5_Genome_HERA.masked.fa | grep -A1 "$i$" >part.$i.fa; done
- cat part.Contig*.fa >Chr13.fa
- rename part.Chr Chr part.Chr*
- rename .fa .masked.fa *.fa
+cat part.Contig*.fa >Chr13.fa
+rename part.Chr Chr part.Chr*
+rename .fa .masked.fa *.fa
+```
+```
+for i in Chr*.fa ; do echo $i; cat maker_opts.ctl | sed "s#genome_file#$i#"  >maker_opts.ctl_${i/.masked.fa/};done
 ```
 
-gffread my.gff3 -T -o my.gtf
-#### genome BUSCO
+creat file "do_maker.sh"
 ```
-run_BUSCO.py -i ../Bfra_R1V1.fa -l ~/program/BUSCO/ascomycota_odb9 -o Bfra_genome_asco  -m geno -c 6 -sp botrytis_cinerea >Bfra_genome_asco.out
+#!/bin/bash
+#SBATCH -n 16
+#SBATCH --mem=32G
+cd /scratch/Xiao_Group/Rice/ZJ5
+maker opt maker_bopts.ctl maker_exe.ctl --fix_nucleotides -base result 2>oe/error
+```
+```
+for i in maker_opts.ctl_*;do echo $i;cat do_maker.sh| sed "s#optctl#$i#;s#result#${i/maker_opts.ctl/ZJ5}#;s#error#${i/maker_opts.ctl/ZJ5_R1}.e#" >ZJ5_${i/maker_opts.ctl_/}_maker.sh;done
+```
+for i in {1..4} ; do echo $i;echo ZJ5_Chr${i}_maker.sh;done ##USE 16 cpu and 32G mem
+for i in {5..13} ; do echo $i;echo ZJ5_Chr${i}_maker.sh;done ##USE 8 cpu and 12G mem
+gffread my.gff3 -T -o my.gtf
+
+#### genome BUSCO
+ZJ5_BUSCO.sh
+```
+#!/bin/bash
+#SBATCH -n 16
+#SBATCH --mem=32G
+cd /scratch/Xiao_Group/Rice/BUSCO_genome
+echo ZJ5
+echo ZJ5_Genome_HERA.fasta
+mkdir ZJ5
+cd ZJ5
+run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l ~/program/BUSCO/liliopsida_odb10 -o ZJ5_genome_lili -m geno -c 16 -sp maize >ZJ5_genome_lili.out
+run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l ~/program/BUSCO/liliopsida_odb10 -o ZJ5_genome_lili_long -m geno -c 16 -sp maize --long >ZJ5_genome_lili_long.out
 ```
 
 ### 1) First round
