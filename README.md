@@ -1,4 +1,4 @@
-# MAKER2_PM_genome_annotation
+# MAKER2_Rice_genome_annotation
 ## Using MAKER2 FOR ANNOTATION OF FOUR DICOT PM genomes
 ### Reference to  https://gist.github.com/darencard/bb1001ac1532dd4225b030cf0cd61ce2
 ###             & https://github.com/CompSynBioLab-KoreaUniv/FunGAP#step1
@@ -15,7 +15,7 @@
 ### Raw data/resources:
 #### *1: Genome scaffolds*: Bfra_R1V1.fa (reformat of consensus_MECAT_R1_90x.fasta From Dr. Menjun Hu)
 #### *2: Botrytis cinerea EST sequence from NCBI (from Chris): EST_botryotinia_1.fasta
-#### *3: Protein data: uniprot + all available Botrytis protein (uniprot_sprot.fasta 04182020; Botrytis protein from NCBI)
+#### *3: Protein data: uniprot + all available rice protein (uniprot_sprot.fasta 04182020; http://ibi.zju.edu.cn/ricerelativesgd/download.php)
 #### *4: Mycelia transcriptome: RNAseq data  
 
 ## 1. De Novo Repeat Identification
@@ -83,6 +83,15 @@ ll /pub/software/augustus-3.3.2/config/species/botrytis_cinerea/botrytis_cinerea
 
 
 ## 3. do maker
+split genome
+```
+cat  ZJ5_Genome_HERA.masked.fa | g ">" | sed 's#>##' >list.txt
+for i in `cat list.txt`; do cat ZJ5_Genome_HERA.masked.fa | grep -A1 "$i$" >part.$i.fa; done
+ cat part.Contig*.fa >Chr13.fa
+ rename part.Chr Chr part.Chr*
+ rename .fa .masked.fa *.fa
+```
+
 gffread my.gff3 -T -o my.gtf
 #### genome BUSCO
 ```
