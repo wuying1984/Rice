@@ -81,12 +81,22 @@ cd ZJ5
 run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l ~/program/BUSCO/liliopsida_odb10 -o ZJ5_genome_lili -m geno -c 16 -sp maize >ZJ5_genome_lili.out
 run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l ~/program/BUSCO/liliopsida_odb10 -o ZJ5_genome_lili_long -m geno -c 16 -sp maize --long >ZJ5_genome_lili_long.out
 ```
+####### C:90.6%[S:89.5%,D:1.1%],F:4.1%,M:5.3%,n:3278
+
+####### C:95.8%[S:94.7%,D:1.1%],F:2.1%,M:2.1%,n:3278
+####### INFO	3140 Complete BUSCOs (C)
+####### INFO	3103 Complete and single-copy BUSCOs (S)
+####### INFO	37 Complete and duplicated BUSCOs (D)
+####### INFO	69 Fragmented BUSCOs (F)
+####### INFO	69 Missing BUSCOs (M)
+
 
 ### 1) First round
 ```
-gff3_merge -d Bfra_R1V1.fa_master_datastore_index.log
-fasta_merge -d Bfra_R1V1.fa_master_datastore_index.log
-run_BUSCO.py -i Bfra_R1V1.fa.all.maker.proteins.fasta  -l ~/program/BUSCO/ascomycota_odb9 -m prot -c 4 -o protein.busco >protein.busco.out
+for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;done
+for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result; cp *.fasta ../ROUND1_result; cd ../;done
+cat ZJ5_Chr*.all.maker.proteins.fasta >ZJ5_R1.all.maker.proteins.fasta
+run_BUSCO.py -i ZJ5_R1.all.maker.proteins.fasta  -l ~/program/BUSCO/liliopsida_odb10 -m prot -c 4 -o ZJ5_R1_PROTEIN >ZJ5_R1_PROTEIN.busco.out
 ```
 ####### C:96.8%[S:96.7%,D:0.1%],F:2.7%,M:0.5%,n:1315
 ####### INFO	1272 Complete BUSCOs (C)
