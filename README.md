@@ -93,7 +93,7 @@ run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l 
 
 ### 1) First round
 ```
-for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;done
+for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;cd ../;done
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result; cp *.fasta ../ROUND1_result; cd ../;done
 cat ZJ5_Chr*.all.maker.proteins.fasta >ZJ5_R1.all.maker.proteins.fasta
 run_BUSCO.py -i ZJ5_R1.all.maker.proteins.fasta  -l ~/program/BUSCO/liliopsida_odb10 -m prot -c 4 -o ZJ5_R1_PROTEIN >ZJ5_R1_PROTEIN.busco.out
