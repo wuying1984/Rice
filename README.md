@@ -97,6 +97,13 @@ for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fa
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result; cp *.fasta ../ROUND1_result; cd ../;done
 cat ZJ5_Chr*.all.maker.proteins.fasta >ZJ5_R1.all.maker.proteins.fasta
 run_BUSCO.py -i ZJ5_R1.all.maker.proteins.fasta  -l ~/program/BUSCO/liliopsida_odb10 -m prot -c 4 -o ZJ5_R1_PROTEIN >ZJ5_R1_PROTEIN.busco.out
+
+for i in {1..15};do echo $i;echo ">$i" >ZJ4_01_${i}.fasta;cat split_3M.fasta| line $i >>ZJ4_01_${i}.fasta;done
+for i in {1..15} ; do echo $i; cat maker_opts_ZJ4_01.ctl| sed "s#01\_1#01\_${i}#" >maker_opts_ZJ4_01_${i}.ctl; done
+for i in {1..15} ; do echo $i; cat ZJ4_01_01_ROUND1.sh| sed "s#01\_01#01\_${i}#g" >01_${i}.sh; done
+for i in ZJ4_01_0*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;cd ../;done
+for i in ZJ4_01_0*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result_2; cp *.all.maker.proteins.fasta ../ROUND1_result_2; cd ../;done
+
 ```
 ####### C:96.8%[S:96.7%,D:0.1%],F:2.7%,M:0.5%,n:1315
 ####### INFO	1272 Complete BUSCOs (C)
