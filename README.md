@@ -92,6 +92,24 @@ run_BUSCO.py -i /scratch/Xiao_Group/Rice/RepeatModeler/ZJ5_Genome_HERA.fasta -l 
 
 
 ### 1) First round
+for i in {01..12} ; do echo $i; cat $i/$i.fasta|grep -v ">" | fold -w3000000 >${i}_split_3M;done
+wc -l *split_3M
+for i in {1..15}; do echo $i; echo ">01_$i" >01_${i}.fasta; cat 01_split_3M | line $i >>01_${i}.fasta;done
+
+
+15 01_split_3M
+       13 02_split_3M
+       14 03_split_3M
+       13 04_split_3M
+       11 05_split_3M
+       11 06_split_3M
+       11 07_split_3M
+       10 08_split_3M
+        9 09_split_3M
+        9 10_split_3M
+       12 11_split_3M
+       10 12_split_3M
+
 ```
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;cd ../;done
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result; cp *.fasta ../ROUND1_result; cd ../;done
