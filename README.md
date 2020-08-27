@@ -111,6 +111,9 @@ for i in {1..15}; do echo $i; echo ">01_$i" >01_${i}.fasta; cat 01_split_3M | li
        10 12_split_3M
 
 ```
+for i in *_*.fasta; do echo $i; cat maker_opts_ZJ4.ctl| sed "s#01\_1\.fasta#$i#" >maker_opts_ZJ4_${i/.fasta}.ctl;done
+for i in *_*.fasta; do echo $i; cat ZJ4_01_ROUND1.sh| sed "s#01#${i/.fasta/}#g" >s${i/.fasta/}.sh;done
+for i in s*.sh; do echo $i; sbatch $i; done
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; gff3_merge -d *_index.log; fasta_merge -d *_index.log;cd ../;done
 for i in ZJ5_Chr*.maker.output; do echo $i; cd $i; cp *.gff ../ROUND1_result; cp *.fasta ../ROUND1_result; cd ../;done
 cat ZJ5_Chr*.all.maker.proteins.fasta >ZJ5_R1.all.maker.proteins.fasta
